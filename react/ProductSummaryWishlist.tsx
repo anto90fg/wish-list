@@ -14,6 +14,8 @@ import { getSession } from './modules/session'
 import storageFactory from './utils/storage';
 import { FormattedMessage } from 'react-intl'
 
+import { usePixel } from 'vtex.pixel-manager' 
+
 const localStore = storageFactory(() => localStorage)
 
 let isAuthenticated =
@@ -51,6 +53,8 @@ const ProductSummaryList: FC<ProductSummaryProps> = ({
   const { list } = useListContext() || []
   const { treePath } = useTreePath()
   const { navigate, history } = useRuntime()
+
+  const { push } = usePixel()
 
   const sessionResponse: any = useSessionResponse()
 
@@ -120,6 +124,16 @@ const ProductSummaryList: FC<ProductSummaryProps> = ({
         product,
         getWishlistId(product.productId)
       )
+
+      const handleOnClick = () =>{
+        push({
+          event: 'productClick',
+          list: 'wishlist',
+          product:normalizedProduct,
+          position:index,
+        })
+      }
+
       if (sku && items.length) {
         for (const item of items) {
           if (item.itemId === sku) {
@@ -133,6 +147,7 @@ const ProductSummaryList: FC<ProductSummaryProps> = ({
           key={product.id}
           treePath={treePath}
           product={normalizedProduct}
+          actionOnClick={handleOnClick}
         />
       )
     })
